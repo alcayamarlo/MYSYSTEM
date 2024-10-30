@@ -133,4 +133,29 @@ public void deletePatients(String sql, Object... values) {
         System.out.println("Error deleting record: " + e.getMessage());
     }
 }
+public void viewPatientById(String sqlQuery, int id, String[] columnHeaders, String[] columnNames) {
+        try (Connection conn = this.connectDB();
+             PreparedStatement pstmt = conn.prepareStatement(sqlQuery)) {
+            
+            pstmt.setInt(1, id);
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    System.out.println("------------------------------------------------------------");
+                    System.out.println("Patient Information:");
+                    System.out.println("------------------------------------------------------------");
+
+                    for (int i = 0; i < columnHeaders.length; i++) {
+                        String value = rs.getString(columnNames[i]);
+                        System.out.printf("%-20s: %s%n", columnHeaders[i], value != null ? value : "N/A");
+                    }
+                    System.out.println("------------------------------------------------------------");
+                } else {
+                    System.out.println("No patient found with ID: " + id);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error retrieving patient: " + e.getMessage());
+        }
+    }
 }
